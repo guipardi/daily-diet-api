@@ -1,29 +1,35 @@
 import { FastifyInstance } from 'fastify'
 import { knex } from '../database'
-import { checkUserIdExists } from '../middlewares/check-user-id-exists'
+import { checkSessionIdExists } from '../middlewares/check-session-id-exists'
 import { z } from 'zod'
 import { randomUUID } from 'crypto'
 
 export async function mealsRoutes(app: FastifyInstance) {
-  app.post('/', { preHandler: [checkUserIdExists] }, async (request, reply) => {
-    const createMealBodySchema = z.object({
-      name: z.string(),
-      description: z.string(),
-      dateAndTime: z.coerce.date(),
-      isInDiet: z.boolean(),
-    })
+  app.post(
+    '/',
+    { preHandler: [checkSessionIdExists] },
+    async (request, reply) => {
+      const createMealBodySchema = z.object({
+        name: z.string(),
+        description: z.string(),
+        isOnDiet: z.boolean(),
+        date: z.coerce.date(),
+      })
 
-    const { name, description, dateAndTime, isInDiet } =
-      createMealBodySchema.parse(request.body)
+      const { name, description, isOnDiet, date } = createMealBodySchema.parse(
+        request.body,
+      )
 
-    const userId = request.cookies.userId
+      await knex('meals').insert({
+        id: randomUUID(),
+        name,
+        description,
+        is_on_diet: isOnDiet,
+        date: date.getTime(),
+        user_id: request.user?.id,
+      })
 
-    await knex('meals').insert({
-      id: randomUUID(),
-      name,
-      description,
-      date_and_time: dateAndTime.getTime(),
-      is_in_diet: isInDiet,
-    })
-  })
+      return reply.status(201).send()
+    },
+  )
 }
