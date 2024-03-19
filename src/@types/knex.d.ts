@@ -7,16 +7,16 @@ declare module 'knex/types/tables' {
   export interface Tables {
     meals: {
       id: string
+      user_id: string
       name: string
       description: string
-      date_and_time: string
-      is_in_diet: boolean
-      session_id?: string
+      is_on_diet: boolean
+      date: number
     }
     users: {
       id: string
+      session_id: string
       name: string
-      refeicoes: string[]
     }
   }
 }
