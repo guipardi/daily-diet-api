@@ -13,5 +13,10 @@ declare module 'knex/types/tables' {
       is_in_diet: boolean
       session_id?: string
     }
+    users: {
+      id: string
+      name: string
+      refeicoes: string[]
+    }
   }
 }

@@ -1,10 +1,15 @@
 import fastify from 'fastify'
 import { mealsRoutes } from './routes/meals'
-import { logMeals } from './middlewares/log-meals'
+import { usersRoutes } from './routes/users'
+import { log } from './middlewares/log'
 
 export const app = fastify()
 
-app.addHook('preHandler', logMeals)
+app.addHook('preHandler', log)
+
+app.register(usersRoutes, {
+  prefix: 'users',
+})
 
 app.register(mealsRoutes, {
   prefix: 'meals',

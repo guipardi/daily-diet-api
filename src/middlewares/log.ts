@@ -1,5 +1,5 @@
 import { FastifyRequest } from 'fastify'
 
-export async function logMeals(request: FastifyRequest) {
+export async function log(request: FastifyRequest) {
   console.log(`[${request.method}] ${request.url}`)
 }
