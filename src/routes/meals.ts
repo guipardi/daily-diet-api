@@ -120,23 +120,30 @@ export async function mealsRoutes(app: FastifyInstance) {
 
   app.get(
     '/metrics',
-    { preHandler: [checkSessionIdExists] },
+    { preHandler: [checkSessionIdExists] } /* Verifica se a sessionId existe */,
     async (request, reply) => {
-      const totalMealsOnDiet = await knex('meals')
+      const totalMealsOnDiet = await knex(
+        'meals',
+      ) /* Pega o valor total de refeições dentro da dieta de um usuário */
         .where({ user_id: request.user?.id, is_on_diet: true })
         .count('id', { as: 'total' })
         .first()
 
-      const totalMealsOffDiet = await knex('meals')
+      const totalMealsOffDiet = await knex(
+        'meals',
+      ) /* Pega o valor total de refeições fora da dieta de um usuário */
         .where({ user_id: request.user?.id, is_on_diet: false })
         .count('id', { as: 'total' })
         .first()
 
-      const totalMeals = await knex('meals')
+      const totalMeals = await knex(
+        'meals',
+      ) /* Pega o total de refeições e ordena por data */
         .where({ user_id: request.user?.id })
         .orderBy('date', 'desc')
 
       const { bestOnDietSequence } = totalMeals.reduce(
+        /* Esse reduce tem uma lógica para calcular quantas refeições eu fiz seguidamente que estavam na dieta */
         (acc, meal) => {
           if (meal.is_on_diet) {
             acc.currentSequence += 1
